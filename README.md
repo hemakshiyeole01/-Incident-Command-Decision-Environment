@@ -1,10 +1,9 @@
-
+---
 title: ICDE OpenEnv
 emoji: 🚨
 colorFrom: red
 colorTo: indigo
 sdk: docker
-pinned: false
 app_port: 7860
 tags:
   - openenv
