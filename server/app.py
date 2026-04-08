@@ -6,9 +6,8 @@ Serves the FastAPI backend + an interactive Playground UI at /app
 from __future__ import annotations
 
 import os
+from typing import Dict, Optional
 import sys
-import json
-from typing import Any, Dict, Optional
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from typing import Dict, Optional
@@ -56,28 +55,36 @@ async def health():
     return {"status": "ok"}
 
 
+from typing import Optional
+
 @app.post("/reset")
-async def reset(request: ResetRequest):
-    task_id = request.task_id or "task1_resource"
-    seed = request.seed or 42
+async def reset(request: Optional[ResetRequest] = None):
+    if request is None:
+        task_id = "task1_resource"
+        seed = 42
+    else:
+        task_id = request.task_id or "task1_resource"
+        seed = request.seed or 42
+
     env = ICDEEnvironment(task_id=task_id, seed=seed)
     _environments[task_id] = env
+
     obs = env.reset()
     return obs.dict()
 
 
 @app.post("/step")
-async def step(request: StepRequest):
+async def step(request: Optional[StepRequest] = None):
+    if request is None:
+        raise HTTPException(status_code=400, detail="Missing request body")
+
     task_id = request.task_id or "task1_resource"
     env = _get_env(task_id)
 
     if env._sim is None:
-        raise HTTPException(status_code=400, detail="Call /reset first")
+        raise HTTPException(status_code=400, detail="Call /reset first.")
 
-    try:
-        result = env.step(request.action)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid action: {str(e)}")
+    result = env.step(request.action)
 
     return {
         "observation": result.observation.dict(),
@@ -137,8 +144,12 @@ async def list_tasks():
     }
 
 
-# ✅ REQUIRED FOR OPENENV
+# ... all your routes above ...
+
 def main():
     import uvicorn
     port = int(os.getenv("PORT", 7860))
     uvicorn.run(app, host="0.0.0.0", port=port)
+
+if __name__ == "__main__":
+    main()

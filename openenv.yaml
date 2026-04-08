@@ -5,7 +5,6 @@ description: >
   where an AI agent plays the role of an Incident Commander managing real-world
   emergencies using the ICS (Incident Command System) framework used by FEMA,
   hospitals, fire departments, and militaries worldwide.
-
 tags:
   - openenv
   - incident-command
@@ -24,7 +23,6 @@ tasks:
       Industrial warehouse fire with 3 active zones, 4 resources, and deliberately
       contradictory field reports. Agent must prioritize life safety, avoid double
       assignment, and flag unreliable reports.
-
   - id: task2_multiagency
     name: "Multi-Agency Conflict Resolution"
     difficulty: medium
@@ -34,7 +32,6 @@ tasks:
       submitting contradictory casualty counts and safety assessments. Agent must
       establish unified command, reconcile conflicts, and make resource calls with
       incomplete information.
-
   - id: task3_cascade
     name: "Cascading Multi-Site Crisis"
     difficulty: hard
@@ -43,7 +40,6 @@ tasks:
       Simultaneous earthquake, gas main rupture, and hospital power failure across
       a city grid. Early decisions create irreversible downstream consequences.
       New complications inject every 5 steps (aftershock, road closure, responder injury).
-
 observation_space:
   type: structured
   description: >
@@ -51,7 +47,6 @@ observation_space:
     field reports (with per-agency reliability metadata), resource status,
     recent event log, civilian status (safe/at_risk/casualties),
     time remaining, and active warnings.
-
 action_space:
   type: structured
   description: >
@@ -102,6 +97,8 @@ graders:
   - task: task3_cascade
     file: graders/grader3.py
     threshold: 0.35
+    
+entrypoint: server.app:main
 
 server:
   framework: fastapi
