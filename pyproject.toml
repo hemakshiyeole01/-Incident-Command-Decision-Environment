@@ -13,7 +13,11 @@ dependencies = [
     "pydantic",
     "openai",
     "httpx",
+    "openenv-core>=0.2.0",
 ]
 
-[project.urls]
-Homepage = "https://huggingface.co/spaces/Hemakshiy/icde-openenv"
+[project.scripts]
+server = "server:app"
+
+[tool.uv]
+dev-dependencies = []
