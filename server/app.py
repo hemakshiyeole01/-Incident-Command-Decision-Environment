@@ -6,6 +6,11 @@ Serves the FastAPI backend + an interactive Playground UI at /app
 from __future__ import annotations
 
 import os
+import sys
+import json
+from typing import Any, Dict, Optional
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from typing import Dict, Optional
 
 from fastapi import FastAPI, HTTPException, Query
@@ -136,8 +141,4 @@ async def list_tasks():
 def main():
     import uvicorn
     port = int(os.getenv("PORT", 7860))
-    uvicorn.run("app:app", host="0.0.0.0", port=port)
-
-
-if __name__ == "__main__":
-    main()
+    uvicorn.run(app, host="0.0.0.0", port=port)
