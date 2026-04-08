@@ -1,0 +1,444 @@
+[
+  {
+    "task_id": "task1_resource",
+    "incident_type": "Industrial Warehouse Fire with Hazmat",
+    "max_steps": 15,
+    "optimal_casualties": 0,
+    "civilians": {"safe": 0, "at_risk": 12, "casualties": 0},
+    "zones": {
+      "zone_a": {"description": "Loading dock — active flames, 4 workers trapped", "severity": 3, "deteriorates": true, "units_assigned": 0, "status": "active", "has_chemicals": false},
+      "zone_b": {"description": "Chemical storage — smoke spreading, 5 workers evacuating", "severity": 4, "deteriorates": true, "units_assigned": 0, "status": "active", "has_chemicals": true},
+      "zone_c": {"description": "Office wing — smoke inhalation, 3 workers sheltering", "severity": 2, "deteriorates": false, "units_assigned": 0, "status": "active", "has_chemicals": false}
+    },
+    "resources": [
+      {"id": "engine_1", "type": "engine"},
+      {"id": "engine_2", "type": "engine"},
+      {"id": "hazmat_1", "type": "hazmat"},
+      {"id": "medical_1", "type": "medical"}
+    ],
+    "initial_reports": [
+      {
+        "report_id": "rpt_001",
+        "agency": "Fire Engine 7",
+        "zone": "zone_a",
+        "casualty_count": 0,
+        "severity": "high",
+        "hazards": ["flames", "structural_instability"],
+        "resources_needed": ["engine"],
+        "reliability_score": 0.95,
+        "content": "Zone A loading dock: active fire spreading east. 4 workers trapped near dock 3. No chemicals confirmed in this zone. Requesting engine company."
+      },
+      {
+        "report_id": "rpt_002",
+        "agency": "Facility Manager",
+        "zone": "zone_b",
+        "casualty_count": 0,
+        "severity": "critical",
+        "hazards": ["chemical_storage", "smoke"],
+        "resources_needed": ["hazmat", "engine"],
+        "reliability_score": 0.9,
+        "content": "Zone B chemical storage: smoke entering from Zone A. Acetylene cylinders and solvents present. IMMEDIATE hazmat response needed. 5 workers evacuating but exit blocked."
+      },
+      {
+        "report_id": "rpt_003",
+        "agency": "Security Guard",
+        "zone": "zone_a",
+        "casualty_count": 0,
+        "severity": "low",
+        "hazards": [],
+        "resources_needed": [],
+        "reliability_score": 0.3,
+        "content": "Zone A looks clear from the parking lot. I think everyone got out. No need for resources here."
+      },
+      {
+        "report_id": "rpt_004",
+        "agency": "Worker Eyewitness",
+        "zone": "zone_c",
+        "casualty_count": 3,
+        "severity": "medium",
+        "hazards": ["smoke_inhalation"],
+        "resources_needed": ["medical"],
+        "reliability_score": 0.85,
+        "content": "Zone C office wing: 3 colleagues with smoke inhalation symptoms. We are sheltering in place. Medical assistance needed but not immediately life-threatening."
+      }
+    ],
+    "initial_warnings": [
+      "DISCREPANCY: rpt_001 (Engine 7: 4 trapped) vs rpt_003 (Guard: zone clear) — VERIFY",
+      "CHEMICAL_HAZARD: Zone B acetylene cylinders require hazmat clearance before engine entry"
+    ],
+    "report_schedule": {
+      "3": [
+        {
+          "report_id": "rpt_005",
+          "agency": "Fire Battalion Chief",
+          "zone": "zone_b",
+          "casualty_count": 0,
+          "severity": "critical",
+          "hazards": ["chemical_storage", "explosion_risk"],
+          "resources_needed": ["hazmat"],
+          "reliability_score": 0.98,
+          "content": "CONFIRMED: Zone B has active explosion risk from acetylene cylinders. Engine companies must NOT enter without hazmat clearance. Repeat: hazmat first in Zone B."
+        }
+      ],
+      "7": [
+        {
+          "report_id": "rpt_006",
+          "agency": "Fire Engine 7",
+          "zone": "zone_a",
+          "casualty_count": 2,
+          "severity": "high",
+          "hazards": ["flames"],
+          "resources_needed": ["medical"],
+          "reliability_score": 0.95,
+          "content": "Zone A update: 2 workers extracted with burns. Requesting medical immediately. Fire partially controlled but dock 3 still active."
+        }
+      ]
+    },
+    "cascades": {
+      "chemical_explosion": {
+        "trigger_step": 8,
+        "prevention_command": "dispatch:hazmat",
+        "prevention_zone": "zone_b",
+        "warning": "Zone B acetylene explosion — 4 casualties",
+        "effect": {"casualties": 4},
+        "triggered": false
+      }
+    }
+  },
+  {
+    "task_id": "task2_multiagency",
+    "incident_type": "Hospital Mass Casualty Event",
+    "max_steps": 20,
+    "optimal_casualties": 2,
+    "civilians": {"safe": 0, "at_risk": 35, "casualties": 0},
+    "zones": {
+      "site_er": {"description": "Emergency Room — primary casualty intake", "severity": 5, "deteriorates": true, "units_assigned": 0, "status": "active", "has_chemicals": false},
+      "site_parking": {"description": "Parking structure — secondary triage area", "severity": 3, "deteriorates": true, "units_assigned": 0, "status": "active", "has_chemicals": false},
+      "site_road": {"description": "Access road — congested, ambulance blockage", "severity": 2, "deteriorates": false, "units_assigned": 0, "status": "active", "has_chemicals": false}
+    },
+    "resources": [
+      {"id": "engine_1", "type": "engine"},
+      {"id": "engine_2", "type": "engine"},
+      {"id": "medical_1", "type": "medical"},
+      {"id": "medical_2", "type": "medical"},
+      {"id": "police_1", "type": "police"},
+      {"id": "rescue_1", "type": "rescue"}
+    ],
+    "initial_reports": [
+      {
+        "report_id": "rpt_fire_1",
+        "agency": "Fire Department IC",
+        "zone": "site_er",
+        "casualty_count": 15,
+        "severity": "critical",
+        "hazards": ["structural_damage", "utilities_compromised"],
+        "resources_needed": ["rescue", "engine"],
+        "reliability_score": 0.9,
+        "content": "Fire IC reporting: ER structure partially collapsed after explosion. 15 casualties confirmed inside. Utilities are off. Requesting rescue and engine for extrication."
+      },
+      {
+        "report_id": "rpt_ems_1",
+        "agency": "EMS Supervisor",
+        "zone": "site_parking",
+        "casualty_count": 8,
+        "severity": "high",
+        "hazards": [],
+        "resources_needed": ["medical"],
+        "reliability_score": 0.92,
+        "content": "EMS reporting: 8 patients transported so far, approximately 20 still on scene in parking lot. Walking wounded and critical mix. Need more medical units. NOTE: Fire's casualty count may include walking wounded."
+      },
+      {
+        "report_id": "rpt_police_1",
+        "agency": "Police Incident Commander",
+        "zone": "site_road",
+        "casualty_count": 0,
+        "severity": "medium",
+        "hazards": ["access_blocked"],
+        "resources_needed": ["police"],
+        "reliability_score": 0.88,
+        "content": "Police IC: Area secured per our assessment. However, ambulance access via Main St is congested — 3 ambulances blocked. Requesting traffic control units."
+      },
+      {
+        "report_id": "rpt_hospital_1",
+        "agency": "Hospital Emergency Director",
+        "zone": "site_er",
+        "casualty_count": 20,
+        "severity": "critical",
+        "hazards": ["structural_instability"],
+        "resources_needed": ["rescue", "medical"],
+        "reliability_score": 0.85,
+        "content": "Hospital director: ER is NOT safe for entry — structural assessment shows east wing unstable. 20 patients still inside. Contradicting any 'structure safe' claim. DO NOT commit units without structural clearance."
+      },
+      {
+        "report_id": "rpt_police_2",
+        "agency": "Police Sergeant on Scene",
+        "zone": "site_er",
+        "casualty_count": 0,
+        "severity": "low",
+        "hazards": [],
+        "resources_needed": [],
+        "reliability_score": 0.25,
+        "content": "Sergeant here: ER looks structurally sound from outside. My guys walked through no problem. I think it's safe to enter. Fire is overreacting."
+      }
+    ],
+    "initial_warnings": [
+      "DISCREPANCY: Fire (15 casualties) vs EMS (8 transported + 20 scene) — reconcile count",
+      "DISCREPANCY: Hospital Director (unsafe entry) vs Police Sergeant (safe to enter) — VERIFY before committing units",
+      "CONFLICT: Police reports 'area secured' but EMS reports ambulance access blocked"
+    ],
+    "report_schedule": {
+      "4": [
+        {
+          "report_id": "rpt_structural",
+          "agency": "Structural Engineer (Mutual Aid)",
+          "zone": "site_er",
+          "casualty_count": 0,
+          "severity": "critical",
+          "hazards": ["collapse_risk"],
+          "resources_needed": ["rescue"],
+          "reliability_score": 0.99,
+          "content": "ENGINEERING ASSESSMENT: East wing has 40% load-bearing failure. Entry PROHIBITED without shoring. West wing entry safe with respiratory protection only. This supersedes all prior structural assessments."
+        }
+      ],
+      "8": [
+        {
+          "report_id": "rpt_mutual_aid",
+          "agency": "County EMS Director",
+          "zone": "site_parking",
+          "casualty_count": 0,
+          "severity": "high",
+          "hazards": [],
+          "resources_needed": ["medical"],
+          "reliability_score": 0.95,
+          "content": "County EMS: 4 additional ambulances en route, ETA 10 minutes. Request staging area designation to avoid access road congestion."
+        }
+      ],
+      "12": [
+        {
+          "report_id": "rpt_update_casualties",
+          "agency": "EMS Supervisor",
+          "zone": "site_er",
+          "casualty_count": 3,
+          "severity": "critical",
+          "hazards": [],
+          "resources_needed": ["medical"],
+          "reliability_score": 0.95,
+          "content": "EMS update: 3 confirmed fatalities from delayed extraction. West wing patients now extracted — 12 survivors in stable condition. East wing still inaccessible. Confirmed: Police Sergeant report was incorrect."
+        }
+      ]
+    },
+    "cascades": {
+      "delayed_extraction": {
+        "trigger_step": 10,
+        "prevention_command": "dispatch:rescue",
+        "prevention_zone": "site_er",
+        "warning": "Delayed extraction — 3 critical patients died awaiting rescue",
+        "effect": {"casualties": 3},
+        "triggered": false
+      },
+      "ambulance_blockage": {
+        "trigger_step": 6,
+        "prevention_command": "dispatch:police",
+        "prevention_zone": "site_road",
+        "warning": "Ambulance blockage caused 15-minute delay — 2 additional deaths",
+        "effect": {"casualties": 2},
+        "triggered": false
+      }
+    }
+  },
+  {
+    "task_id": "task3_cascade",
+    "incident_type": "Simultaneous Earthquake + Gas Rupture + Hospital Power Failure",
+    "max_steps": 30,
+    "optimal_casualties": 3,
+    "civilians": {"safe": 0, "at_risk": 60, "casualties": 0},
+    "zones": {
+      "site_gas_district": {"description": "Gas main rupture — downtown district, 200m evacuation zone", "severity": 5, "deteriorates": true, "units_assigned": 0, "status": "active", "has_chemicals": true},
+      "site_hospital": {"description": "Regional hospital — backup power failing, 45 ICU patients", "severity": 5, "deteriorates": true, "units_assigned": 0, "status": "active", "has_chemicals": false},
+      "site_residential": {"description": "Residential collapse — apartment building partial collapse", "severity": 4, "deteriorates": true, "units_assigned": 0, "status": "active", "has_chemicals": false},
+      "site_school": {"description": "Elementary school — structural damage, 200 students sheltering", "severity": 3, "deteriorates": false, "units_assigned": 0, "status": "active", "has_chemicals": false},
+      "site_bridge": {"description": "Main access bridge — cracked, possible closure needed", "severity": 2, "deteriorates": false, "units_assigned": 0, "status": "active", "has_chemicals": false}
+    },
+    "resources": [
+      {"id": "engine_1", "type": "engine"},
+      {"id": "engine_2", "type": "engine"},
+      {"id": "engine_3", "type": "engine"},
+      {"id": "hazmat_1", "type": "hazmat"},
+      {"id": "hazmat_2", "type": "hazmat"},
+      {"id": "medical_1", "type": "medical"},
+      {"id": "medical_2", "type": "medical"},
+      {"id": "medical_3", "type": "medical"},
+      {"id": "police_1", "type": "police"},
+      {"id": "police_2", "type": "police"},
+      {"id": "rescue_1", "type": "rescue"},
+      {"id": "rescue_2", "type": "rescue"},
+      {"id": "power_1", "type": "power"}
+    ],
+    "initial_reports": [
+      {
+        "report_id": "rpt_gas_1",
+        "agency": "Utility Emergency Response",
+        "zone": "site_gas_district",
+        "casualty_count": 0,
+        "severity": "critical",
+        "hazards": ["gas_leak", "explosion_risk", "evacuation_required"],
+        "resources_needed": ["hazmat", "police"],
+        "reliability_score": 0.97,
+        "content": "CRITICAL: 16-inch gas main ruptured at 4th and Main. Explosive concentration building. Mandatory 200m evacuation. Ignition sources must be eliminated immediately. Estimated shut-off time: 45 minutes without specialist equipment."
+      },
+      {
+        "report_id": "rpt_hospital_power",
+        "agency": "Hospital Facilities Director",
+        "zone": "site_hospital",
+        "casualty_count": 0,
+        "severity": "critical",
+        "hazards": ["power_failure", "life_support_risk"],
+        "resources_needed": ["power"],
+        "reliability_score": 0.99,
+        "content": "URGENT: Hospital backup generator damaged in earthquake. Main power offline. 45 ICU patients on life support have approximately 2 hours on battery backup. Need emergency power unit NOW. This is a life-safety emergency."
+      },
+      {
+        "report_id": "rpt_residential_1",
+        "agency": "Fire Rescue Team Alpha",
+        "zone": "site_residential",
+        "casualty_count": 4,
+        "severity": "high",
+        "hazards": ["structural_collapse", "trapped_survivors"],
+        "resources_needed": ["rescue", "medical"],
+        "reliability_score": 0.93,
+        "content": "Partial collapse at 1200 Elm St apartment building. 4 confirmed casualties, est. 12-15 survivors trapped in rubble. Void spaces detected — active rescue possible. Need rescue team and medical staging immediately."
+      },
+      {
+        "report_id": "rpt_school_1",
+        "agency": "School Principal",
+        "zone": "site_school",
+        "casualty_count": 0,
+        "severity": "medium",
+        "hazards": ["structural_cracks", "children_shelter"],
+        "resources_needed": ["rescue", "police"],
+        "reliability_score": 0.8,
+        "content": "Washington Elementary: building has visible cracks in south wall but standing. 200 students and 20 staff sheltering in gym. No injuries reported. Need structural assessment and orderly evacuation support."
+      },
+      {
+        "report_id": "rpt_bridge_1",
+        "agency": "City Engineer",
+        "zone": "site_bridge",
+        "casualty_count": 0,
+        "severity": "low",
+        "hazards": ["structural_damage"],
+        "resources_needed": [],
+        "reliability_score": 0.9,
+        "content": "Main St bridge: visible cracking in deck. Load capacity reduced. Recommend closure to heavy vehicles (ambulances OK, fire trucks NOT). This affects routing for all incident sites."
+      },
+      {
+        "report_id": "rpt_aftershock_warning",
+        "agency": "Seismology Center",
+        "zone": "site_residential",
+        "casualty_count": 0,
+        "severity": "high",
+        "hazards": ["aftershock_risk"],
+        "resources_needed": [],
+        "reliability_score": 0.88,
+        "content": "Seismic monitoring: 70% probability of M4.5+ aftershock within 90 minutes. All rescue operations in unstable structures must have escape protocol. Do NOT leave personnel in collapse zone during tremor window."
+      }
+    ],
+    "initial_warnings": [
+      "PRIORITY_CONFLICT: Hospital power (45 ICU patients, 2hr window) vs Gas leak (explosion risk, immediate) — COMMANDER MUST DECIDE FIRST",
+      "ROUTING: Bridge limited to light vehicles — affects engine company routing",
+      "AFTERSHOCK_RISK: 70% probability within 90 min — rescue ops require escape protocol"
+    ],
+    "report_schedule": {
+      "5": [
+        {
+          "report_id": "rpt_aftershock",
+          "agency": "Field Commander Alpha",
+          "zone": "site_residential",
+          "casualty_count": 1,
+          "severity": "critical",
+          "hazards": ["aftershock", "secondary_collapse"],
+          "resources_needed": ["rescue", "medical"],
+          "reliability_score": 0.98,
+          "content": "AFTERSHOCK M4.2 at 14:32 — secondary collapse at Elm St. 1 responder injured (non-fatal). Additional void spaces opened. Rescue team evacuated per protocol. Re-entry possible in 15 minutes with updated structural assessment."
+        }
+      ],
+      "10": [
+        {
+          "report_id": "rpt_hospital_update",
+          "agency": "Hospital Medical Director",
+          "zone": "site_hospital",
+          "casualty_count": 0,
+          "severity": "critical",
+          "hazards": ["power_failure"],
+          "resources_needed": ["power"],
+          "reliability_score": 0.99,
+          "content": "HOSPITAL UPDATE: Battery backup at 60% — estimated 75 minutes remaining. If power not restored in 60 minutes, we begin manual ventilation protocol (3 staff per patient, unsustainable). Time-critical decision point approaching."
+        }
+      ],
+      "15": [
+        {
+          "report_id": "rpt_gas_update",
+          "agency": "Utility Emergency Response",
+          "zone": "site_gas_district",
+          "casualty_count": 0,
+          "severity": "high",
+          "hazards": ["gas_leak"],
+          "resources_needed": ["hazmat"],
+          "reliability_score": 0.97,
+          "content": "Gas update: Hazmat team has located main valve. Shut-off in progress — estimated 20 minutes to safe levels. Evacuation zone can reduce to 100m once complete. Good progress if hazmat deployed."
+        }
+      ],
+      "18": [
+        {
+          "report_id": "rpt_road_closure",
+          "agency": "Police Traffic Division",
+          "zone": "site_bridge",
+          "casualty_count": 0,
+          "severity": "medium",
+          "hazards": ["access_blocked"],
+          "resources_needed": ["police"],
+          "reliability_score": 0.95,
+          "content": "Road closure update: Bridge fully closed by order — new route via Highway 9 adds 8 minutes to all response times. Mutual aid units should use alternate routing."
+        }
+      ],
+      "22": [
+        {
+          "report_id": "rpt_school_clear",
+          "agency": "Structural Engineer",
+          "zone": "site_school",
+          "casualty_count": 0,
+          "severity": "low",
+          "hazards": [],
+          "resources_needed": [],
+          "reliability_score": 0.98,
+          "content": "School structural assessment complete: South wall has cosmetic cracking only. Building is safe for occupancy. Evacuation not required but buses have arrived for orderly dismissal. Site can be closed."
+        }
+      ]
+    },
+    "cascades": {
+      "hospital_power_failure": {
+        "trigger_step": 15,
+        "prevention_command": "dispatch:power",
+        "prevention_zone": "site_hospital",
+        "warning": "Hospital power failed — 8 ICU patients on life support died",
+        "effect": {"casualties": 8},
+        "triggered": false
+      },
+      "gas_explosion": {
+        "trigger_step": 12,
+        "prevention_command": "dispatch:hazmat",
+        "prevention_zone": "site_gas_district",
+        "warning": "Gas ignition — explosion injured 6 responders and 3 civilians",
+        "effect": {"casualties": 9},
+        "triggered": false
+      },
+      "collapse_responder": {
+        "trigger_step": 20,
+        "prevention_command": "dispatch:rescue",
+        "prevention_zone": "site_residential",
+        "warning": "Residential collapse — 5 more survivors died without rescue",
+        "effect": {"casualties": 5},
+        "triggered": false
+      }
+    }
+  }
+]

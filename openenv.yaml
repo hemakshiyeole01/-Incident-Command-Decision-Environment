@@ -1,0 +1,132 @@
+name: icde
+version: "1.0.0"
+description: >
+  Incident Command Decision Environment (ICDE) — An OpenEnv-compliant benchmark
+  where an AI agent plays the role of an Incident Commander managing real-world
+  emergencies using the ICS (Incident Command System) framework used by FEMA,
+  hospitals, fire departments, and militaries worldwide.
+
+tags:
+  - openenv
+  - incident-command
+  - emergency-management
+  - multi-agent
+  - real-world
+  - ics
+  - decision-making
+
+tasks:
+  - id: task1_resource
+    name: "Resource Allocation Under Scarcity"
+    difficulty: easy
+    max_steps: 15
+    description: >
+      Industrial warehouse fire with 3 active zones, 4 resources, and deliberately
+      contradictory field reports. Agent must prioritize life safety, avoid double
+      assignment, and flag unreliable reports.
+
+  - id: task2_multiagency
+    name: "Multi-Agency Conflict Resolution"
+    difficulty: medium
+    max_steps: 20
+    description: >
+      Hospital mass casualty event with 4 agencies (Fire, EMS, Police, Hospital)
+      submitting contradictory casualty counts and safety assessments. Agent must
+      establish unified command, reconcile conflicts, and make resource calls with
+      incomplete information.
+
+  - id: task3_cascade
+    name: "Cascading Multi-Site Crisis"
+    difficulty: hard
+    max_steps: 30
+    description: >
+      Simultaneous earthquake, gas main rupture, and hospital power failure across
+      a city grid. Early decisions create irreversible downstream consequences.
+      New complications inject every 5 steps (aftershock, road closure, responder injury).
+
+observation_space:
+  type: structured
+  description: >
+    ICDEObservation (Pydantic model) containing step number, incident type, active zones,
+    field reports (with per-agency reliability metadata), resource status,
+    recent event log, civilian status (safe/at_risk/casualties),
+    time remaining, and active warnings.
+
+action_space:
+  type: structured
+  description: >
+    ICDEAction (Pydantic model) with fields: command (CommandAction enum),
+    resource_type (optional ResourceType enum), target_zone (optional str),
+    priority (optional Priority enum), directive (optional str, max 500 chars),
+    flags (optional list of report IDs to flag as unreliable).
+  commands:
+    - dispatch
+    - recall
+    - establish_command
+    - flag_conflict
+    - escalate
+    - stand_down
+    - request_mutual_aid
+    - issue_directive
+
+reward:
+  type: dense
+  range: [-1.0, 1.0]
+  components:
+    - name: life_safety
+      weight: 0.4
+      description: Rewards life safety outcomes — fewer casualties relative to optimal
+    - name: resource_efficiency
+      weight: 0.2
+      description: Rewards clean allocation, penalizes double-assignment
+    - name: conflict_resolution
+      weight: 0.2
+      description: Rewards flagging unreliable reports and resolving contradictions
+    - name: protocol_compliance
+      weight: 0.1
+      description: Rewards ICS-compliant actions (unified command, proper escalation)
+    - name: penalty_loop
+      weight: -0.2
+      description: Penalizes repeating the same action 3+ times in a row
+    - name: penalty_cascade
+      weight: -0.3
+      description: Penalizes cascade events that could have been prevented
+
+graders:
+  - task: task1_resource
+    file: graders/grader1.py
+    threshold: 0.5
+  - task: task2_multiagency
+    file: graders/grader2.py
+    threshold: 0.45
+  - task: task3_cascade
+    file: graders/grader3.py
+    threshold: 0.35
+
+server:
+  framework: fastapi
+  port: 7860
+  endpoints:
+    - POST /reset
+    - POST /step
+    - GET /state
+    - GET /grade
+    - GET /tasks
+    - GET /health
+
+baseline:
+  script: inference.py
+  model: gpt-4.1-mini
+  scores:
+    task1_resource: 0.60
+    task2_multiagency: 0.45
+    task3_cascade: 0.30
+
+docker:
+  build: docker build -t icde .
+  run: docker run -p 7860:7860 icde
+
+huggingface:
+  space_sdk: docker
+  tags:
+    - openenv
