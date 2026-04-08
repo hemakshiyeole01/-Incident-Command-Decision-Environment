@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "icde-openenv"
+version = "0.1.0"
+description = "Incident Command Decision Environment - OpenEnv benchmark"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "openai",
+    "httpx",
+]
+
+[project.urls]
+Homepage = "https://huggingface.co/spaces/Hemakshiy/icde-openenv"
